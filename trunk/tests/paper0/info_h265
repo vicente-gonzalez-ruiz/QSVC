@@ -1,47 +1,0 @@
-ffmpeg version N-46698-g451be67-   http://johnvansickle.com/ffmpeg/    Copyright (c) 2000-2015 the FFmpeg developers
-  built with gcc 4.9.2 (Debian 4.9.2-16)
-  configuration: --enable-gpl --enable-version3 --disable-shared --disable-debug --enable-runtime-cpudetect --enable-libmp3lame --enable-libx264 --enable-libx265 --enable-libwebp --enable-libspeex --enable-libvorbis --enable-libvpx --enable-libfreetype --enable-fontconfig --enable-libxvid --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libtheora --enable-libvo-aacenc --enable-libvo-amrwbenc --enable-gray --enable-libopenjpeg --enable-libopus --enable-libass --enable-gnutls --enable-libvidstab --enable-libsoxr --cc=gcc-4.9
-  libavutil      54. 23.101 / 54. 23.101
-  libavcodec     56. 39.101 / 56. 39.101
-  libavformat    56. 33.101 / 56. 33.101
-  libavdevice    56.  4.100 / 56.  4.100
-  libavfilter     5. 16.101 /  5. 16.101
-  libswscale      3.  1.101 /  3.  1.101
-  libswresample   1.  1.100 /  1.  1.100
-  libpostproc    53.  3.100 / 53.  3.100
-[rawvideo @ 0x3eab7c0] Estimating duration from bitrate, this may be inaccurate
-Input #0, rawvideo, from 'DATA_IN/mobile_352x288x30x420x300.yuv':
-  Duration: 00:00:12.00, start: 0.000000, bitrate: 30412 kb/s
-    Stream #0:0: Video: rawvideo (I420 / 0x30323449), yuv420p, 352x288, 30412 kb/s, 25 tbr, 25 tbn, 25 tbc
-x265 [info]: HEVC encoder version 1.6+442-479087422e29
-x265 [info]: build info [Linux][GCC 4.8.4][64 bit] 8bpp
-x265 [info]: using cpu capabilities: MMX2 SSE2Fast SSSE3 SSE4.2 AVX
-x265 [info]: Main profile, Level-2.1 (Main tier)
-x265 [info]: Thread pool created using 12 threads
-x265 [info]: frame threads / pool features       : 3 / wpp(5 rows)
-x265 [info]: Coding QT: max CU size, min CU size : 64 / 8
-x265 [info]: Residual QT: max TU size, max depth : 32 / 1 inter / 1 intra
-x265 [info]: ME / range / subpel / merge         : hex / 57 / 2 / 2
-x265 [info]: Keyframe min / max / scenecut       : 25 / 250 / 40
-x265 [info]: Lookahead / bframes / badapt        : 20 / 4 / 2
-x265 [info]: b-pyramid / weightp / weightb / refs: 1 / 1 / 0 / 3
-x265 [info]: AQ: mode / str / qg-size / cu-tree  : 1 / 0.0 / 64 / 1
-x265 [info]: Rate Control / qCompress            : ABR-2990 kbps / 0.60
-x265 [info]: tools: rd=3 signhide tmvp strong-intra-smoothing deblock sao
-Output #0, mp4, to 'test.mp4':
-  Metadata:
-    encoder         : Lavf56.33.101
-    Stream #0:0: Video: hevc (libx265) ([35][0][0][0] / 0x0023), yuv420p, 352x288, q=2-31, 2990 kb/s, 30 fps, 15360 tbn, 30 tbc
-    Metadata:
-      encoder         : Lavc56.39.101 libx265
-Stream mapping:
-  Stream #0:0 -> #0:0 (rawvideo (native) -> hevc (libx265))
-Press [q] to stop, [?] for help
-frame=   38 fps=0.0 q=0.0 PSNR=Y:inf U:inf V:inf *:inf size=     148kB time=00:00:00.23 bitrate=5198.3kbits/s dup=6 drop=0    frame=   50 fps= 49 q=0.0 PSNR=Y:inf U:inf V:inf *:inf size=     276kB time=00:00:00.63 bitrate=3563.7kbits/s dup=8 drop=0    frame=   62 fps= 40 q=0.0 PSNR=Y:inf U:inf V:inf *:inf size=     403kB time=00:00:01.03 bitrate=3192.6kbits/s dup=10 drop=0    frame=   75 fps= 36 q=0.0 PSNR=Y:inf U:inf V:inf *:inf size=     554kB time=00:00:01.46 bitrate=3095.3kbits/s dup=12 drop=0    frame=   90 fps= 34 q=0.0 PSNR=Y:inf U:inf V:inf *:inf size=     744kB time=00:00:01.96 bitrate=3099.4kbits/s dup=15 drop=0    frame=  105 fps= 33 q=0.0 PSNR=Y:inf U:inf V:inf *:inf size=     933kB time=00:00:02.46 bitrate=3098.5kbits/s dup=17 drop=0    frame=  120 fps= 32 q=0.0 PSNR=Y:inf U:inf V:inf *:inf size=    1114kB time=00:00:02.96 bitrate=3077.0kbits/s dup=20 drop=0    frame=  129 fps= 25 q=0.0 LPSNR=Y:inf U:inf V:inf *:inf size=    1559kB time=00:00:04.23 bitrate=3017.7kbits/s dup=21 drop=0    
-video:1556kB audio:0kB subtitle:0kB other streams:0kB global headers:1kB muxing overhead: 0.203812%
-x265 [info]: frame I:      1, Avg QP:10.74  kb/s: 16729.20  PSNR Mean: Y:51.574 U:51.416 V:51.557
-x265 [info]: frame P:     38, Avg QP:17.64  kb/s: 5868.44   PSNR Mean: Y:44.249 U:45.334 V:45.340
-x265 [info]: frame B:     90, Avg QP:23.77  kb/s: 1584.60   PSNR Mean: Y:38.687 U:42.929 V:42.688
-x265 [info]: global :    129, Avg QP:21.86  kb/s: 2963.91   PSNR Mean: Y:40.425 U:43.703 V:43.538
-x265 [info]: Weighted P-Frames: Y:0.0% UV:0.0%
-x265 [info]: consecutive B-frames: 30.8% 0.0% 15.4% 15.4% 38.5% 
