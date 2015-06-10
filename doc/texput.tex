@@ -1,0 +1,420 @@
+\title{MCJ2K (Motion Compensated JPEG 2000)}
+
+\maketitle
+\tableofcontents
+
+\section{Why MCJ2K?}
+\begin{itemize}
+\item MCTF (Motion Compensated Temporal Filtering) \cite{2003.secker}
+  removes efficiently the temporal redundancy of image sequences
+  \cite{2007.schwarz}, enables the temporal scalability and controls the
+  impact of the errors.
+\item JPEG 2000 is a good image compressor, lossy/lossless, and can
+  create code-streams that are spatial and quality scalable.
+\item Both codecs can be used together to design a
+  spatial-temporal-quality scalable video compressor with a reasonable
+  performance.
+\end{itemize}
+
+\section{MCJ2K overview}
+\begin{center}
+  \includegraphics[width=1.0\textwidth]{QSVC}
+\end{center}
+\begin{equation}
+  T = \log_2(\text{GOP\_size})+1.
+\end{equation}
+
+\section{MCTF in MCJ2K}
+\begin{itemize}
+\item In MCJ2K the GOPs are always open and simetrical, in each
+  TRL (Temporal Resolution Level).
+\end{itemize}
+\begin{center}
+  \includegraphics[width=\textwidth]{MCTF}
+\end{center}
+\begin{itemize}
+\item The image $L^{t}_{i}$ is predicted by means of the reference
+  images $L^{t-1}_{i}$ and $L^{t-1}_{i+1}$, where
+\begin{equation}
+  L^{t-1} = L^t \oplus \{H^t,M^t\}
+\end{equation}
+and where $H^t$ is the residue subband and $M^t$ the motion
+information.
+\end{itemize}
+
+\newpage
+\begin{itemize}
+\item In MCJ2K, if not enough temporal correlation is found, the B
+  pictures are replaced by I pictures (and the corresponding motion
+  vector fields are erased).
+\end{itemize}
+\begin{center}
+  \includegraphics[width=\textwidth]{MCTF_prunning}
+\end{center}
+%\begin{itemize}
+%\item These events do not affect to the GOP\_size.
+%\end{itemize}
+
+\section{MCTF implementation}
+\begin{itemize}
+\item The MCTF stage can be designed using a typical dyadic Discrete
+  Wavelet Transform (DWT)~\cite{1989.mallat}, where the samples are
+  pictures:
+\end{itemize}
+
+\begin{center}
+  \includegraphics[width=0.9\textwidth]{temporal_transform}
+\end{center}
+
+\section{The 1-level DWT temporal transform}
+\begin{itemize}
+\item It is implemented using Lifting~\cite{1998.a.daubechies, 1995.sweldens,
+    Sweldens.BuildingWavelets} (see also Section~\ref{sec:Lifting}):
+\end{itemize}
+
+\begin{center}
+  \includegraphics[width=\textwidth]{temporal_step}
+\end{center}
+
+\section{Over-pixel Motion estimation}
+\noindent MCJ2K uses an hierarchical motion estimation algorithm that,
+alghought is sub-optimal, is fast enought for real-time coding:
+\begin{enumerate}
+\item Compute the DWT of
+  $l=\lfloor\log_2(\text{search\_range})\rfloor$ levels to the
+  predicted frame $P=L^{t}_{i}$ and the two reference frames
+  $R_0=L^{t-1}_{2i}$ and $R_1=L^{t-1}_{2i+1}$.
+\item ${\cal LL}^l(M_i^t)\leftarrow 0$ /* Or with other more suitable
+  values */.
+\item While $l>0$:
+  \begin{enumerate}
+  \item Divide the subband ${\cal LL}^l(P)$ in blocks of $b$-size and
+    $(\pm 1)$-search them into the subbands ${\cal LL}^l(R_0)$ and
+    ${\cal LL}^l(R_1)$, calculating a low-resolution ${\cal
+      LL}^l(M_i^t)$ bi-directional motion vector field.
+  \item $l\leftarrow l-1$.
+  \item Synthesize ${\cal LL}^l(M_i^t)$, ${\cal LL}^l(P)$, ${\cal
+      LL}^l(R_0)$ and ${\cal LL}^l(R_1)$ computing the inverse DWT one
+    step (the HH-subbands are $0$).
+  \item ${\cal LL}^l(M_i^t)\leftarrow {\cal LL}^l(M_i^t)\cdot 2$.
+  \end{enumerate}
+\end{enumerate}
+
+\section{Sub-pixel Motion estimation}
+\noindent Let $s$ the sub-pixel accuracy. After the over-pixel ME
+stage, the refinement of $M_i^t$ continues following the next
+algorithm:
+
+\begin{enumerate}
+\item $l\leftarrow 1$.
+\item while $l\le s$:
+  \begin{enumerate}
+  \item Synthesize ${\cal LL}^{-l}(P)$, ${\cal LL}^{-l}(R_0)$ and
+    ${\cal LL}^{-l}(R_1)$ computing the inverse DWT one step (the
+    HH-subbands are $0$).
+  \item $M_i^t\leftarrow M_i^t\cdot 2$ /* Multiply by $2$ the vectors */.
+  \item $b\leftarrow b\cdot 2$ /* Multiply by $2$ the block size */.
+  \item Divide the subband ${\cal LL}^{-l}(P)$ in blocks of $b$-size
+    and $(\pm 1)$-search them into the subbands ${\cal LL}^{-l}(R_0)$
+    and ${\cal LL}^{-l}(R_1)$, calculating a sub-pixel accuracy
+    $M_i^t$ bi-directional motion vector field.
+  \item $l\leftarrow l+1$.
+  \end{enumerate}
+\end{enumerate}
+
+\section{Prediction step}
+\vspace{-2ex}
+\begin{center}
+\includegraphics[width=\textwidth]{predict_dataflow}
+\end{center}
+\vspace{-2ex}
+\begin{itemize}
+\item The prediction step minimizes the entropy of the subbands $H$.
+\end{itemize}
+
+\section{Update step}
+\begin{center}
+\includegraphics[width=\textwidth]{update_dataflow}
+\end{center}
+\begin{itemize}
+\item The update step minimizes the aliasing of the subband $L$.
+\end{itemize}
+
+\section{Motion coding}
+\begin{itemize}
+\item Each B-frame generates a bi-directional motion vector field $M^t_i$.
+\item To compress (losslessly) each $M^t_i$, two stages are performed:
+  \begin{enumerate}
+  \item \textbf{Redundancy removing}. Two sources of redundancy can be
+    found:
+    \begin{enumerate}
+    \item The backward motion vectors are, in absolute value, similar
+      to the forward motion vectors:
+      \begin{equation}
+        \overleftarrow M^t_i \approx -\overrightarrow M^t_i.
+        \label{eq:motion_pred_1}
+      \end{equation}
+    \item The motion vectors between temporal levels are linearly
+      correlated:
+      \begin{equation}
+        M^t_i \approx 2 M^{t-1}_{2i}.
+        \label{eq:motion_pred_2}
+      \end{equation}
+    \end{enumerate}
+  \item \textbf{Entropy coding}. The residues are compressed with JPEG
+    2000, as images of 4 components (2 2D-vectors).
+  \end{enumerate}
+\end{itemize}
+
+\section{Texture coding}
+\begin{itemize}
+\item The image residues, that form the high-pass subbands
+  $$\{H^t;0<t<\log_2(\text{GOP\_size})\},$$ are temporally
+  decorrelated, i.e., they can be efficiently compressed with MJ2K.
+\item The images in the $L^T$ low-pass subband are very far away in
+  time, and therefore, are minimally correlated. For this reason the
+  $L^T$ can be efficiently compressed with MJ2K.
+\end{itemize}
+
+\section{Temporal scalability}
+\begin{center}
+  \includegraphics[width=\textwidth]{TS-extraction}
+\end{center}
+\begin{itemize}
+\item The temporal subbands must be decoded in order.
+\end{itemize}
+
+\section{Quality scalability}
+\begin{center}
+  \includegraphics[width=\textwidth]{QS-extraction}
+\end{center}
+\begin{itemize}
+\item The temporal subbands must be decoded by quality (using LRCP).
+\end{itemize}
+
+\section{Spatial scalability}
+\vspace{-1ex}
+\begin{center}
+  \includegraphics[width=0.9\textwidth]{QS-extraction}
+\end{center}
+\vspace{-2ex}
+\begin{itemize}
+\item Using the RLCP in each frame (LRCP can be also used, but with a
+  small loss of performance), motion compensation is performed without
+  sub-sampling.
+\end{itemize}
+
+\begin{comment}
+\section{Future research}
+\begin{enumerate}
+\item \textbf{Determination of the optimal progression of the
+    code-stream in limited bit-rate contexts.} In other words, which
+  is the best decoding order to minimize the distortion of a GOP (or a
+  group of them) when the avaiable bandwidth is unknown and the
+  code-stream is going to be truncated?
+%\item \textbf{Design of efficient motion estimation algorithms.} Can
+%  the motion estimation procedure be improved (taking into account the
+%  compression ratio) using the Equations \ref{eq:motion_pred_1} and
+%  \ref{eq:motion_pred_2}?
+\item \textbf{Optimization of the motion estimation parameters in
+    order to decrease the coding bit-rate.} Several aspects such the
+  sub-pixel accurary, the search range, the selection of the motion
+  vectors (see Equations \ref{eq:motion_pred_1} and
+  \ref{eq:motion_pred_2}), etc. influence on the encoding bit-rate of
+  the motion and the texture informations. Which is the
+  best selection of these parameters/algorithm to minimize the final
+  rate-distortion curve?
+\end{enumerate}
+\end{comment}
+
+\section*{MCJ2K in the lab}
+\fontsize{8}{8}
+\begin{verbatim}
+svn checkout http://svn.hpca.ual.es/svn/QSVC/Kakadu
+cd Kakadu
+source ./compile Linux-x86-64 # Otras alternativas: "./complie"
+cd ..
+
+svn checkout http://svn.hpca.ual.es/svn/QSVC/MCTF/trunk MCTF
+cd MCTF
+source ./compile
+cd ..
+
+svn checkout http://svn.hpca.ual.es/svn/vruiz/progs/snr SNR
+cd DNR
+source ./compile
+cd ..
+
+svn checkout http://svn.hpca.ual.es/svn/QSVC/performance_tests
+cd performance_tests
+
+./mobile_352x288x30_vs_1QL
+
+./mobile_352x288x30_vs_QLs
+\end{verbatim}
+
+\begin{comment}
+\section{The other exteme}
+\begin{itemize}
+\item In the proposed codec, the motion is not scalable and must be
+  tranmitted to the receiver before the texture.
+\item The alternative is to design a different motion estimation
+  procedure that allows to truncate the motion data at any point of
+  the transmission.
+\item For example, consider two reference images. We could generate a prediction using only one vector (for the whole image) and 
+\end{itemize}
+\end{comment}
+
+\begin{comment}
+\section{Stream organization}
+\begin{itemize}
+\item Each temporal subband ($L^t, H^t, H^{t-1},\cdots, H^1$) is a
+  different stream\footnote{A file, a pipe or a socket, depending on
+    the context.} and is compressed with Motion JPEG 2000,
+  independetly.
+\item Although the number of pictures in each subband in known, each
+  picture can have a different length. Therefore, in order to decode only a
+  given picture, it is neccessary to decompress a number of pictures
+  stored in different subbands.
+\item Let $t>0$ the number of temporal resolution levels and $i\le 0$ the
+  index of the image that we want to decompress. The decompressor
+  should use
+\begin{equation}
+  i
+\end{equation}
+temporal subbands, starting always with the $L^t$ subband, next the
+$H^t$ subband and so on.
+\end{itemize}
+\end{comment}
+
+\begin{comment}
+\section{Code-stream organization}
+\vspace{-2ex}
+\begin{center}
+\includegraphics[height=\pagegoal - \pagetotal - 0.2cm]{QSVC_stream_organizations}
+\end{center}
+\end{comment}
+
+\begin{comment}
+\section{Open Loop t+2D Coding}
+\begin{itemize}
+\item Consiste en separar la descorrelaci'on temporal de la espacial y
+  en usar las im'agenes de referencia originales como predicci'on en
+  el compresor.
+\item Usado cuando no se conoce en tiempo de compresi'on la tasa de
+  bits recuperada por el descompresor.
+\end{itemize}
+
+\begin{center}
+  \includegraphics[width=0.7\textwidth]{ol-t_2D_compressor}
+\end{center}
+
+\begin{center}
+  \includegraphics[width=0.7\textwidth]{cl-t_2D_decompressor}
+\end{center}
+
+\begin{itemize}
+\item N'otese que el descodificador es id'entico al de Closed Loop t+2D
+  Coding.
+\end{itemize}
+
+\section{Open Loop 2D+t Coding}
+
+\begin{center}
+  \includegraphics[width=0.7\textwidth]{ol-2D_t_compressor}
+\end{center}
+
+\begin{center}
+  \includegraphics[width=0.7\textwidth]{ol-2D_t_decompressor}
+\end{center}
+
+\begin{itemize}
+\item Similar a t+2D, pero la compensaci'on del movimiento (resta de
+  las im'agenes de predicci'on) se realiza en el dominio transformado.
+  Este hecho puede generar que algunas formas de escalabilidad en el
+  descompresor (como la espacial) sea m'as eficiente de obtener que en
+  el caso t+2D.
+\end{itemize}
+
+
+\end{comment}
+
+\begin{comment}
+\section{Performance}
+\begin{verbatim}
+# Descargar QSVC en el "home".
+
+# Descomprimir QSVC.
+tar xzvf QSVC.tar.gz
+
+# Crear el directorio bin.
+mkdir bin
+
+# Compilamos.
+make -C QSVC all
+
+# Ampliamos el PATH.
+export PATH=$PATH:~/bin
+
+# Definimos la variable QSVC.
+export QSVC=~
+
+# Probamos ...
+qsvc
+qsvc compress --help
+
+# Creamos un directorio para probar el compresor.
+mkdir akiyo
+cd akiyo
+wget http://www.ace.ual.es/~vruiz/akiyo_352x288x300_30Hz.yuv
+ln -s akiyo_352x288x300_30Hz.yuv _low_0.yuv
+
+# Comprimimos.
+svc compress --pictures=300
+
+# Qu'e ha pasado?
+qsvc info --pictures=300
+
+# Descomprimos.
+mkdir tmp
+cd tmp
+cp ../*.mjc .
+cp ../*.gz .
+qsvc expand --pictures=300
+
+# Visualizamos.
+mplayer _low_0.yuv -demuxer rawvideo -rawvideo cif
+\end{verbatim}
+\end{comment}
+
+\begin{comment}
+\section{Transmission over full-duplex channels}
+\begin{itemize}
+\item In full-duplex channels, the receiver can talk with the
+  sender(s) in order to request those parts of
+  the code-stream that have arrived with errors or not have arrived.
+\item The code-stream is transmitted in packets and the receiver uses
+  a buffer of packets to perform the error/flow control.
+\item When more than one quality layer is available, the receiver
+  should determine the next packet to retrieve using the rules:
+  \begin{enumerate}
+  \item Request first the packet that is the closest to the
+    reproduction point (and that it is not in transit).
+  \item Request first the packet that belong to smaller quality layer.
+  \end{enumerate}
+\end{itemize}
+
+\section{Transmission over half-duplex channels}
+\begin{itemize}
+\item In half-duplex channels, the receiver has no chance of request
+  the data that have been arrived with errors or that have not been
+  received at all.
+\item To deal with this situation, some kind of interleaving of the
+  data of the packets jointed to a forward (in destine) error
+  correction scheme should be used (like in the CD's).
+\item The amount of redundancy should be inversely proportional to the
+  index of the quality layer.
+\end{itemize}
+\end{comment}
+
+%\bibliography{H264,SVC,wavelets}

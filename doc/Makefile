@@ -1,0 +1,2 @@
+include $(ROOT)/templates/Makefile
+

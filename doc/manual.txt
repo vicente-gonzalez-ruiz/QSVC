@@ -1,0 +1,44 @@
++------------------------------+
+| Quality Scalable Video Codec |
++------------------------------+
+
+Basic manual:
+
+Step 1. Install the Kakadu command line tools. Test that the commands
+can be executed from any directory of the file system (try for example
+if you can call to "kdu_compress").
+
+Step 2. Define the QSVC shell variable:
+
+For example, if QSVC it is installed in the directory $HOME/QSVC, you
+should declare:
+
+$ export QSVC=$HOME/QSVC
+
+Step 3. Create a new directory where the "low_0" YUV raw stream it is
+located in:
+
+$ mkdir akiyo_compression_example
+$ cd akiyo_compression_example
+$ ln -s ~/YUV_sequences/akiyo_352x288x300_30Hz.yuv low_0
+
+Step 4. Compressing ...:
+
+$ qsvc compress
+
+as the result, a set of files *.mjc and *type* should be created. These files are the QSVC code-stream.
+
+Step 5. Decompressing ...:
+
+$ mkdir expand
+$ cp *.mjc *type* expand
+$ cd expand
+$ qsvc expand
+
+as the result, the file low_0 is the decompressed YUV sequence.
+
+Use:
+
+$ mplayer low_0 -demuxer rawvideo -rawvideo w=352:h=288 -loop 0
+
+to see a low_0 file (YUV data).

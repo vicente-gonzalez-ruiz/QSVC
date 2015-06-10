@@ -1,0 +1,20 @@
+Welcome to the QSVC project!
+
+Directory's contents are:
+
+branches   -> Versions of MCTF software under development.
+doc        -> Documentation.
+snapshots  -> Old and stable versions of MCTF that have been immortalized.
+trunk      -> The newest stable version of MCTF that obviously, should work.
+readme.txt -> This file.
+
+Please, send your comments about MCTF to:
+
+Dr. Vicente González Ruiz
+Computer Architecture and Electronics Department
+University of Almería
+vruiz@ual.es
+
+The MCTF project has been supported by the Junta de Andalucía through
+the Proyecto Motriz "Codificación de Vídeo Escalable y su Streaming
+sobre Internet" (P10-TIC-6548).
