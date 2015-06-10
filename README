@@ -2,19 +2,18 @@ Welcome to the QSVC project!
 
 Directory's contents are:
 
-branches   -> Versions of MCTF software under development.
-doc        -> Documentation.
-snapshots  -> Old and stable versions of MCTF that have been immortalized.
-trunk      -> The newest stable version of MCTF that obviously, should work.
-readme.txt -> This file.
+doc     -> Documentation.
+trunk   -> The newest stable version of QSVC that obviously, should work.
+LICENSE -> The software license.
+README  -> This file.
 
-Please, send your comments about MCTF to:
+Please, send your comments about QSVC to:
 
 Dr. Vicente González Ruiz
-Computer Architecture and Electronics Department
+Informatics Department
 University of Almería
 vruiz@ual.es
 
-The MCTF project has been supported by the Junta de Andalucía through
+The QSVC project has been supported by the Junta de Andalucía through
 the Proyecto Motriz "Codificación de Vídeo Escalable y su Streaming
 sobre Internet" (P10-TIC-6548).
