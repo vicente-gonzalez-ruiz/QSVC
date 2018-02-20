@@ -15,6 +15,7 @@
 
 
 from info import info
+from PIL import Image, ImageChops, ImageEnhance, ImageOps
 
 ## Class info for MJPEG codec.
 class info_mjpeg(info):
