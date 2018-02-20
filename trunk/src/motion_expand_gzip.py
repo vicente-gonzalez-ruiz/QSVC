@@ -33,6 +33,7 @@ import getopt
 import os
 import display
 from GOP import GOP
+from PIL import Image, ImageChops, ImageEnhance, ImageOps
 
 ## Number of blocks in the X direction.
 blocks_in_x = 0

@@ -315,6 +315,15 @@ void me_for_image
     mv_dwt->synthesize(mv[NEXT][Y_FIELD], blocks_in_y_l, blocks_in_x_l, 1);
     mv_dwt->synthesize(mv[PREV][X_FIELD], blocks_in_y_l, blocks_in_x_l, 1);
     mv_dwt->synthesize(mv[NEXT][X_FIELD], blocks_in_y_l, blocks_in_x_l, 1);
+
+
+/**
+Llamada al método que realiza la búsqueda en espiral
+*/
+/***************************************/
+spiralSearch(blocks_in_x, blocks_in_y, pixels_in_x, pixels_in_y);
+/***************************************/
+
     
     /** - Doubles the motion vectors, because the calculated values now
 	referenced to an image twice as large in each dimension. */
@@ -479,6 +488,42 @@ void me_for_image
 #endif /* FAST_SEARCH */
 
 } /* me_for_image */
+
+
+
+/*Método que realiza la búsqueda en espiral*/
+void spiralSearch(int blocks_in_x, int blocks_in_y, int pixels_in_x, int pixels_in_y){
+
+    int dx,dy;
+    pixels_in_x = pixels_in_y = dx =0;
+    dy = -1;
+
+    int t = std::max(blocks_in_x,blocks_in_y);
+    int maxI = t*t;
+
+    for(int i =0; i < maxI; i++){
+        if ((-blocks_in_x/2 <= pixels_in_x) && (pixels_in_x <= blocks_in_x/2) && (-blocks_in_y/2 <= pixels_in_y) && (pixels_in_y <= blocks_in_y/2)){
+
+            // DO STUFF...
+
+        }
+
+        if( (pixels_in_x == pixels_in_y) || ((pixels_in_x < 0) && (pixels_in_x == -pixels_in_y)) || ((pixels_in_x > 0) && (pixels_in_x == 1-pixels_in_y))){
+
+            t = dx;
+            dx = -dy;
+            dy = t;
+        }
+
+        pixels_in_x += dx;
+        pixels_in_y += dy;
+    }
+}
+
+/***************************************/
+
+
+
 
 #include <getopt.h>
 

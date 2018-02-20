@@ -53,6 +53,7 @@ from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
 from MCTF_parser import MCTF_parser
+from PIL import Image, ImageChops, ImageEnhance, ImageOps
 
 ## Refers to Full-HD resolution. Is used as a boundary between the use
 #  of a block size of 16 or 32 by default.

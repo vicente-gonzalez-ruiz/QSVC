@@ -48,6 +48,7 @@ from GOP import GOP
 from subprocess import check_call
 from subprocess import CalledProcessError
 from MCTF_parser import MCTF_parser
+from PIL import Image, ImageChops, ImageEnhance, ImageOps
 
 
 #MOTION_CODER_NAME = "gzip"

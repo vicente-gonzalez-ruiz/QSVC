@@ -13,6 +13,7 @@ import sys
 import getopt
 import os
 import display
+from PIL import Image, ImageChops, ImageEnhance, ImageOps
 
 ## Size of the X dimension of the pictures.
 pixels_in_x = 352

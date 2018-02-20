@@ -15,6 +15,7 @@ import os
 import array
 import display
 import string
+from PIL import Image, ImageChops, ImageEnhance, ImageOps
 
 ## Number of overlaped pixels between the blocks in the motion compensation process.
 block_overlaping = 0

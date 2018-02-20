@@ -20,6 +20,7 @@ import os
 from subprocess import check_call
 from subprocess import CalledProcessError
 from MCTF_parser import MCTF_parser
+from PIL import Image, ImageChops, ImageEnhance, ImageOps
 
 ## Number of components of a motion field.
 COMPONENTS      = 4

@@ -13,6 +13,7 @@ import sys
 import getopt
 import os
 import display
+from PIL import Image, ImageChops, ImageEnhance, ImageOps
 
 ## Name of the file with the motion fields.
 file = ""
